@@ -303,6 +303,7 @@ void draw_animation(lv_obj_t *canvas, struct zmk_widget_screen *widget) {
 #if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE)
     sel_canvas = canvas;
     sel_apply(nice_oled_anim_get());
+    widget_oled_anim_init();
     return;
 #endif
 

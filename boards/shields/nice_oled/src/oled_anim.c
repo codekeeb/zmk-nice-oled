@@ -22,8 +22,7 @@ static uint8_t current_anim = 0;
 uint8_t nice_oled_anim_get(void) { return current_anim; }
 
 static void raise_changed(void) {
-    ZMK_EVENT_RAISE(new_zmk_oled_anim_changed(
-        (struct zmk_oled_anim_changed){.index = current_anim}));
+    raise_zmk_oled_anim_changed((struct zmk_oled_anim_changed){.index = current_anim});
 }
 
 #if IS_ENABLED(CONFIG_SETTINGS)
