@@ -43,6 +43,13 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_OLED_WIDGET_STATUS)
     zephyr_library_sources(widgets/output.c)
     zephyr_library_sources(widgets/util.c)
 
+    if(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE)
+      # Nucleo + behavior del selector de animacion: en AMBAS mitades
+      # (el behavior es de locality global).
+      zephyr_library_sources(src/oled_anim.c)
+      zephyr_library_sources(src/behavior_oled_anim.c)
+    endif()
+
     zephyr_library_sources(assets/vim.c)
     if(CONFIG_NICE_OLED_SHOW_SLEEP_ART_ON_IDLE OR CONFIG_NICE_OLED_SHOW_SLEEP_ART_ON_IDLE)
       zephyr_library_sources(assets/sleep_status_art.c)
@@ -89,6 +96,12 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_OLED_WIDGET_STATUS)
       endif()
 
       zephyr_library_sources(assets/crystal.c)
+      if(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE)
+        # Todas las animaciones compiladas para poder ciclarlas en caliente.
+        zephyr_library_sources(assets/cat.c)
+        zephyr_library_sources(assets/head.c)
+        zephyr_library_sources(assets/spaceman.c)
+      endif()
       target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_CAT app PRIVATE assets/cat.c)
       target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SPACEMAN app PRIVATE assets/spaceman.c)
       target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_HEAD app PRIVATE assets/head.c)

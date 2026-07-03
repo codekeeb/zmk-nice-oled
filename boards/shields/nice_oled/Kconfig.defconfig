@@ -147,6 +147,10 @@ config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SPACEMAN
     bool "Enable spaceman animation on peripheral"
     default n
 
+config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE
+    bool "Compile all animations and switch at runtime (&oledanim behavior)"
+    default n
+
 config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_MS
     int "Animation length in milliseconds"
     default 10000 if NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_POKEMON
@@ -154,6 +158,9 @@ config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_MS
     default 4800 if NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SPACEMAN
     default 960 if NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_GEM
     default 960 if NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_CAT
+    # Fallback: sin el, elegir SMART_BATTERY o SELECTABLE dejaba el int
+    # vacio y rompia el build (missing expression en configs.c).
+    default 960
 endif # NICE_OLED_WIDGET_ANIMATION_PERIPHERAL
 
 if NICE_OLED_WIDGET_STATIC_IMAGE_PERIPHERAL

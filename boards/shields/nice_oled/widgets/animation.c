@@ -26,6 +26,133 @@ const lv_img_dsc_t *crystal_imgs[] = {
     &crystal_13, &crystal_14, &crystal_15, &crystal_16,
 };
 
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE)
+/* Modo seleccionable: todas las animaciones compiladas, cambiables en
+ * caliente con el behavior &oledanim (ver oled_anim.c). */
+
+#include <zmk/display.h>
+#include <zmk/event_manager.h>
+#include <nice_oled/events/oled_anim_changed.h>
+#include <nice_oled/oled_anim.h>
+
+LV_IMG_DECLARE(cat_0);
+LV_IMG_DECLARE(cat_1);
+LV_IMG_DECLARE(cat_2);
+LV_IMG_DECLARE(cat_3);
+LV_IMG_DECLARE(cat_4);
+LV_IMG_DECLARE(cat_5);
+LV_IMG_DECLARE(cat_6);
+LV_IMG_DECLARE(cat_7);
+static const lv_img_dsc_t *sel_cat_imgs[] = {&cat_0, &cat_1, &cat_2, &cat_3,
+                                             &cat_4, &cat_5, &cat_6, &cat_7};
+
+LV_IMG_DECLARE(head_00);
+LV_IMG_DECLARE(head_01);
+LV_IMG_DECLARE(head_02);
+LV_IMG_DECLARE(head_03);
+LV_IMG_DECLARE(head_04);
+LV_IMG_DECLARE(head_05);
+LV_IMG_DECLARE(head_06);
+LV_IMG_DECLARE(head_07);
+LV_IMG_DECLARE(head_08);
+LV_IMG_DECLARE(head_09);
+LV_IMG_DECLARE(head_10);
+LV_IMG_DECLARE(head_11);
+LV_IMG_DECLARE(head_12);
+LV_IMG_DECLARE(head_13);
+LV_IMG_DECLARE(head_14);
+LV_IMG_DECLARE(head_15);
+static const lv_img_dsc_t *sel_head_imgs[] = {
+    &head_00, &head_01, &head_02, &head_03, &head_04, &head_05, &head_06, &head_07,
+    &head_08, &head_09, &head_10, &head_11, &head_12, &head_13, &head_14, &head_15};
+
+LV_IMG_DECLARE(spaceman_00);
+LV_IMG_DECLARE(spaceman_01);
+LV_IMG_DECLARE(spaceman_02);
+LV_IMG_DECLARE(spaceman_03);
+LV_IMG_DECLARE(spaceman_04);
+LV_IMG_DECLARE(spaceman_05);
+LV_IMG_DECLARE(spaceman_06);
+LV_IMG_DECLARE(spaceman_07);
+LV_IMG_DECLARE(spaceman_08);
+LV_IMG_DECLARE(spaceman_09);
+LV_IMG_DECLARE(spaceman_10);
+LV_IMG_DECLARE(spaceman_11);
+LV_IMG_DECLARE(spaceman_12);
+LV_IMG_DECLARE(spaceman_13);
+LV_IMG_DECLARE(spaceman_14);
+LV_IMG_DECLARE(spaceman_15);
+LV_IMG_DECLARE(spaceman_16);
+LV_IMG_DECLARE(spaceman_17);
+LV_IMG_DECLARE(spaceman_18);
+LV_IMG_DECLARE(spaceman_19);
+static const lv_img_dsc_t *sel_spaceman_imgs[] = {
+    &spaceman_00, &spaceman_01, &spaceman_02, &spaceman_03, &spaceman_04,
+    &spaceman_05, &spaceman_06, &spaceman_07, &spaceman_08, &spaceman_09,
+    &spaceman_10, &spaceman_11, &spaceman_12, &spaceman_13, &spaceman_14,
+    &spaceman_15, &spaceman_16, &spaceman_17, &spaceman_18, &spaceman_19};
+
+struct sel_anim {
+    const lv_img_dsc_t **imgs;
+    uint8_t count;
+    uint16_t duration_ms;
+};
+
+static const struct sel_anim sel_anims[] = {
+    {crystal_imgs, 16, 960},        /* 0: gema/cristal */
+    {sel_cat_imgs, 8, 960},         /* 1: gato */
+    {sel_head_imgs, 16, 4800},      /* 2: cabeza */
+    {sel_spaceman_imgs, 20, 4800},  /* 3: astronauta */
+};
+
+static lv_obj_t *sel_art = NULL;
+static lv_obj_t *sel_canvas = NULL;
+
+static void sel_apply(uint8_t idx) {
+    if (sel_canvas == NULL) {
+        return;
+    }
+
+    if (idx >= ARRAY_SIZE(sel_anims)) {
+        idx = 0;
+    }
+
+    if (sel_art) {
+        lv_obj_del(sel_art);
+        sel_art = NULL;
+    }
+
+    sel_art = lv_animimg_create(sel_canvas);
+    lv_obj_center(sel_art);
+    lv_animimg_set_src(sel_art, (const void **)sel_anims[idx].imgs, sel_anims[idx].count);
+    lv_animimg_set_duration(sel_art, sel_anims[idx].duration_ms);
+    lv_animimg_set_repeat_count(sel_art, LV_ANIM_REPEAT_INFINITE);
+    lv_animimg_start(sel_art);
+    lv_obj_align(sel_art, LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_CUSTOM_X,
+                 CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_CUSTOM_Y);
+}
+
+struct oled_anim_vm {
+    uint8_t index;
+};
+
+static void oled_anim_update_cb(struct oled_anim_vm state) { sel_apply(state.index); }
+
+static struct oled_anim_vm oled_anim_get_state(const zmk_event_t *eh) {
+    const struct zmk_oled_anim_changed *ev = as_zmk_oled_anim_changed(eh);
+
+    return (struct oled_anim_vm){.index = (ev != NULL) ? ev->index : nice_oled_anim_get()};
+}
+
+ZMK_DISPLAY_WIDGET_LISTENER(widget_oled_anim, struct oled_anim_vm, oled_anim_update_cb,
+                            oled_anim_get_state)
+ZMK_SUBSCRIPTION(widget_oled_anim, zmk_oled_anim_changed);
+
+BUILD_ASSERT(ARRAY_SIZE(sel_anims) == NICE_OLED_ANIM_COUNT,
+             "NICE_OLED_ANIM_COUNT desincronizado con sel_anims[]");
+
+#endif /* SELECTABLE */
+
 #if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL)
 #if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_HEAD)
 
@@ -173,6 +300,12 @@ LV_IMG_DECLARE(vim);
        // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_STATIC_IMAGE_PERIPHERAL)
 
 void draw_animation(lv_obj_t *canvas, struct zmk_widget_screen *widget) {
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE)
+    sel_canvas = canvas;
+    sel_apply(nice_oled_anim_get());
+    return;
+#endif
+
     lv_obj_t *art = lv_animimg_create(canvas);
 
 #if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL)

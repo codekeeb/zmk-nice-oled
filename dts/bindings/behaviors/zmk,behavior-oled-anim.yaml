@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+
+description: Cycle the peripheral OLED animation at runtime
+
+compatible: "zmk,behavior-oled-anim"
+
+include: zero_param.yaml
