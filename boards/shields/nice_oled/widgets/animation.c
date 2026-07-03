@@ -161,9 +161,9 @@ struct sel_anim {
 static const struct sel_anim sel_anims[] = {
     {crystal_imgs, 16, 960},        /* 0: gema/cristal */
     {sel_cat_imgs, 8, 960},         /* 1: gato */
-    {sel_head_imgs, 16, 4800},      /* 2: cabeza */
-    {sel_spaceman_imgs, 20, 4800},  /* 3: astronauta */
-    {sel_pokemon_imgs, 48, 10000},  /* 4: pokemon */
+    {sel_head_imgs, 16, 1600},      /* 2: cabeza (10 fps) */
+    {sel_spaceman_imgs, 20, 2000},  /* 3: astronauta (10 fps) */
+    {sel_pokemon_imgs, 48, 4800},   /* 4: pokemon (10 fps) */
     {sel_logo_imgs, 1, 960},        /* 5: logo CODE/KEEB (estatico) */
 };
 
