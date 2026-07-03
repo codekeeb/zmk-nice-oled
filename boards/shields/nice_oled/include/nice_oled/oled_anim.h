@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 /* Debe coincidir con la tabla sel_anims[] de animation.c (BUILD_ASSERT). */
-#define NICE_OLED_ANIM_COUNT 4
+#define NICE_OLED_ANIM_COUNT 5
 
 /* Indice de animacion actual (persistido en settings). */
 uint8_t nice_oled_anim_get(void);

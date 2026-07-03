@@ -541,6 +541,10 @@ config NICE_OLED_WIDGET_LAYER_CUSTOM_Y
 ##}}}
 
 ## BATTERY WIDGET POSITION {{{
+config NICE_OLED_WIDGET_BATTERY_GRAPHIC
+    bool "Draw battery as a graphic icon with fill level instead of a % number"
+    default n
+
 config NICE_OLED_WIDGET_BATTERY_CUSTOM_X
     int "Battery widget X position"
     default 0 if NICE_OLED_ON

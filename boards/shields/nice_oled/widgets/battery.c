@@ -60,7 +60,46 @@ void animation_smart_battery_off(lv_obj_t *canvas) {
 }
 #endif
 
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_BATTERY_GRAPHIC)
+/* Bateria grafica: icono con relleno proporcional al nivel, en lugar del
+ * numero. 27x12 px en las mismas coordenadas que ocupaba el texto. */
+static void draw_battery_icon(lv_obj_t *canvas, const struct status_state *state) {
+    const lv_coord_t x = CONFIG_NICE_OLED_WIDGET_BATTERY_CUSTOM_X;
+    const lv_coord_t y = CONFIG_NICE_OLED_WIDGET_BATTERY_CUSTOM_Y + 2;
+
+    lv_draw_rect_dsc_t outline_dsc;
+    lv_draw_rect_dsc_init(&outline_dsc);
+    outline_dsc.bg_opa = LV_OPA_TRANSP;
+    outline_dsc.border_color = LVGL_FOREGROUND;
+    outline_dsc.border_width = 1;
+
+    lv_draw_rect_dsc_t fill_dsc;
+    init_rect_dsc(&fill_dsc, LVGL_FOREGROUND);
+
+    /* cuerpo + borne */
+    lv_canvas_draw_rect(canvas, x, y, 22, 12, &outline_dsc);
+    lv_canvas_draw_rect(canvas, x + 22, y + 3, 2, 6, &fill_dsc);
+
+    /* relleno proporcional (max 18 px utiles) */
+    uint8_t level = state->battery > 100 ? 100 : state->battery;
+    lv_coord_t w = (level * 18) / 100;
+    if (w > 0) {
+        lv_canvas_draw_rect(canvas, x + 2, y + 2, w, 8, &fill_dsc);
+    }
+
+    if (state->charging) {
+        lv_draw_img_dsc_t img_dsc;
+        lv_draw_img_dsc_init(&img_dsc);
+        lv_canvas_draw_img(canvas, x + 27, y - 2, &bolt, &img_dsc);
+    }
+}
+#endif /* CONFIG_NICE_OLED_WIDGET_BATTERY_GRAPHIC */
+
 static void draw_level(lv_obj_t *canvas, const struct status_state *state) {
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_BATTERY_GRAPHIC)
+    draw_battery_icon(canvas, state);
+    return;
+#endif
     lv_draw_label_dsc_t label_right_dsc;
 #if IS_ENABLED(CONFIG_NICE_EPAPER_ON)
     init_label_dsc(&label_right_dsc, LVGL_FOREGROUND, &pixel_operator_mono_16, LV_TEXT_ALIGN_RIGHT);
@@ -76,6 +115,10 @@ static void draw_level(lv_obj_t *canvas, const struct status_state *state) {
 }
 
 static void draw_charging_level(lv_obj_t *canvas, const struct status_state *state) {
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_BATTERY_GRAPHIC)
+    draw_battery_icon(canvas, state);
+    return;
+#endif
     lv_draw_img_dsc_t img_dsc;
     lv_draw_img_dsc_init(&img_dsc);
     lv_draw_label_dsc_t label_right_dsc;
