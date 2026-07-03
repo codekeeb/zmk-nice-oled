@@ -149,6 +149,9 @@ static const lv_img_dsc_t *sel_pokemon_imgs[] = {
     &pokemon_35, &pokemon_36, &pokemon_37, &pokemon_38, &pokemon_39, &pokemon_40, &pokemon_41,
     &pokemon_42, &pokemon_43, &pokemon_44, &pokemon_45, &pokemon_46, &pokemon_47};
 
+LV_IMG_DECLARE(codekeeb_logo);
+static const lv_img_dsc_t *sel_logo_imgs[] = {&codekeeb_logo};
+
 struct sel_anim {
     const lv_img_dsc_t **imgs;
     uint8_t count;
@@ -161,6 +164,7 @@ static const struct sel_anim sel_anims[] = {
     {sel_head_imgs, 16, 4800},      /* 2: cabeza */
     {sel_spaceman_imgs, 20, 4800},  /* 3: astronauta */
     {sel_pokemon_imgs, 48, 10000},  /* 4: pokemon */
+    {sel_logo_imgs, 1, 960},        /* 5: logo CODE/KEEB (estatico) */
 };
 
 static lv_obj_t *sel_art = NULL;
