@@ -1,3 +1,21 @@
+# Fork CODE/KEEB — rama `selectable`
+
+> Fork de [mctechnology17/zmk-nice-oled](https://github.com/mctechnology17/zmk-nice-oled)
+> con mejoras propias (usado por
+> [codekeeb/sofle-choc-rgb-zmk](https://github.com/codekeeb/sofle-choc-rgb-zmk)):
+>
+> - **Animación del periférico seleccionable en caliente**
+>   (`CONFIG_NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE=y`): compila
+>   las 6 animaciones (gema, gato, cabeza, astronauta, pokémon y logo
+>   CODE/KEEB) y las cicla con el behavior **`&oledanim`** (declararlo en
+>   el keymap con `compatible = "zmk,behavior-oled-anim"`); la elección
+>   persiste en settings.
+> - **Batería gráfica** (`CONFIG_NICE_OLED_WIDGET_BATTERY_GRAPHIC=y`):
+>   icono de pila con relleno proporcional + rayo al cargar, en vez del
+>   número de porcentaje.
+> - Fix: default de `ANIMATION_PERIPHERAL_MS` que faltaba (elegir Smart
+>   Battery dejaba un int vacío y rompía el build).
+
 # nice!oled - nice!epaper - nice!custom
 ![nice_oled_demo](./assets/nice_oled_demo.GIF)
 ![nice_epaper_demo](./assets/nice_epaper_demo.GIF)
