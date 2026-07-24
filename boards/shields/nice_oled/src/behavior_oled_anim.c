@@ -21,6 +21,25 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
 
+/* CODEKEEB PATCH: real (non-NULL) data/config structs, same pattern as
+ * every stock ZMK behavior (see behavior_caps_word.c) -- even though this
+ * behavior doesn't need per-instance state today, the earlier
+ * NULL/NULL/NULL/NULL registration left it structurally different from
+ * every working Studio-editable behavior in this tree, and ZMK Studio's
+ * set_layer_binding rejected it with INVALID_BEHAVIOR while every other
+ * zero-param behavior with real data/config structs (caps_word,
+ * studio_unlock, trans, etc.) worked fine. */
+struct behavior_oled_anim_config {
+    uint8_t _unused;
+};
+
+struct behavior_oled_anim_data {
+    uint8_t _unused;
+};
+
+static const struct behavior_oled_anim_config behavior_oled_anim_config_0 = {0};
+static struct behavior_oled_anim_data behavior_oled_anim_data_0 = {0};
+
 static int on_keymap_binding_pressed(struct zmk_behavior_binding *binding,
                                      struct zmk_behavior_binding_event event) {
     nice_oled_anim_next();
@@ -39,16 +58,9 @@ static const struct behavior_driver_api behavior_oled_anim_driver_api = {
     .binding_released = on_keymap_binding_released,
 };
 
-/* CODEKEEB PATCH: instantiate via DT_INST_FOREACH_STATUS_OKAY like every
- * other ZMK behavior driver (e.g. behavior_caps_word.c), instead of a
- * hardcoded BEHAVIOR_DT_INST_DEFINE(0, ...). ZMK Studio's
- * set_layer_binding rejected this behavior with INVALID_BEHAVIOR even
- * though get_behavior_details could see and name it -- this brings its
- * instantiation in line with every other behavior in the tree so it's
- * registered exactly the way ZMK's own local-id/Studio bookkeeping
- * expects. */
 #define OLED_ANIM_INST(n)                                                                        \
-    BEHAVIOR_DT_INST_DEFINE(n, NULL, NULL, NULL, NULL, POST_KERNEL,                              \
+    BEHAVIOR_DT_INST_DEFINE(n, NULL, NULL, &behavior_oled_anim_data_##n,                         \
+                            &behavior_oled_anim_config_##n, POST_KERNEL,                          \
                             CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, &behavior_oled_anim_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(OLED_ANIM_INST)
