@@ -39,7 +39,18 @@ static const struct behavior_driver_api behavior_oled_anim_driver_api = {
     .binding_released = on_keymap_binding_released,
 };
 
-BEHAVIOR_DT_INST_DEFINE(0, NULL, NULL, NULL, NULL, POST_KERNEL,
-                        CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, &behavior_oled_anim_driver_api);
+/* CODEKEEB PATCH: instantiate via DT_INST_FOREACH_STATUS_OKAY like every
+ * other ZMK behavior driver (e.g. behavior_caps_word.c), instead of a
+ * hardcoded BEHAVIOR_DT_INST_DEFINE(0, ...). ZMK Studio's
+ * set_layer_binding rejected this behavior with INVALID_BEHAVIOR even
+ * though get_behavior_details could see and name it -- this brings its
+ * instantiation in line with every other behavior in the tree so it's
+ * registered exactly the way ZMK's own local-id/Studio bookkeeping
+ * expects. */
+#define OLED_ANIM_INST(n)                                                                        \
+    BEHAVIOR_DT_INST_DEFINE(n, NULL, NULL, NULL, NULL, POST_KERNEL,                              \
+                            CONFIG_KERNEL_INIT_PRIORITY_DEFAULT, &behavior_oled_anim_driver_api);
+
+DT_INST_FOREACH_STATUS_OKAY(OLED_ANIM_INST)
 
 #endif /* DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT) */
