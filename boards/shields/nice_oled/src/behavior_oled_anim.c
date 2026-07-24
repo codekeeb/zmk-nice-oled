@@ -65,4 +65,15 @@ static const struct behavior_driver_api behavior_oled_anim_driver_api = {
 
 DT_INST_FOREACH_STATUS_OKAY(OLED_ANIM_INST)
 
+/* CODEKEEB TEMP DEBUG: log this device's readiness and real local_id at
+ * boot, late enough that the local-id map is populated. Remove once the
+ * Studio set_layer_binding INVALID_BEHAVIOR bug is diagnosed. */
+static int oled_anim_debug_dump(void) {
+    const struct device *dev = DEVICE_DT_GET(DT_DRV_INST(0));
+    LOG_ERR("CODEKEEB DEBUG oledanim: dev->name=\"%s\" ready=%d local_id=%u", dev->name,
+            device_is_ready(dev), zmk_behavior_get_local_id(dev->name));
+    return 0;
+}
+SYS_INIT(oled_anim_debug_dump, APPLICATION, 99);
+
 #endif /* DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT) */
