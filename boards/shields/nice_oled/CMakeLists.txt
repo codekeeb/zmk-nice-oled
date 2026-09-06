@@ -28,6 +28,13 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_OLED_WIDGET_STATUS)
       zephyr_include_directories(${APPLICATION_SOURCE_DIR}/include)
     endif()
 
+    # CODEKEEB: expone include/ a TODO el build, no solo a esta libreria.
+    # zephyr_library_include_directories() es local, asi que el codigo del
+    # zmk-config (p.ej. el handler RPC que selecciona la animacion desde
+    # ZMK Studio) no encontraba <nice_oled/oled_anim.h> y se compilaba
+    # vacio en silencio.
+    zephyr_include_directories(include)
+
     zephyr_library_sources(custom_status_screen.c)
     zephyr_library_sources(assets/images.c)
 
