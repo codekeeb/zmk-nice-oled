@@ -7,6 +7,8 @@
  * periferico (animation.c).
  */
 
+#include <errno.h>
+
 #include <zephyr/kernel.h>
 #include <zephyr/settings/settings.h>
 
@@ -62,4 +64,26 @@ void nice_oled_anim_next(void) {
 #if IS_ENABLED(CONFIG_SETTINGS)
     settings_save_one("nice_oled/anim", &current_anim, sizeof(current_anim));
 #endif
+}
+
+/* CODEKEEB: misma ruta que _next (evento + persistencia), pero eligiendo
+ * la animacion en vez de ciclar, que es lo que necesita un selector. */
+int nice_oled_anim_set(uint8_t idx) {
+    if (idx >= NICE_OLED_ANIM_COUNT) {
+        return -EINVAL;
+    }
+
+    if (idx == current_anim) {
+        return 0;
+    }
+
+    current_anim = idx;
+
+    raise_changed();
+
+#if IS_ENABLED(CONFIG_SETTINGS)
+    settings_save_one("nice_oled/anim", &current_anim, sizeof(current_anim));
+#endif
+
+    return 0;
 }
