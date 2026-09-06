@@ -241,7 +241,7 @@ static struct zmk_widget_wpm_bongo_cat wpm_bongo_cat_widget;
  * responsive bongo cat
  **/
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
 #include "responsive_bongo_cat.h"
 static struct zmk_widget_responsive_bongo_cat responsive_bongo_cat_widget;
 #endif
@@ -1123,8 +1123,6 @@ static void nice_oled_apply_wpm_view(void) {
 
     lv_obj_t *bongo = zmk_widget_wpm_bongo_cat_obj(&wpm_bongo_cat_widget);
     lv_obj_t *luna = zmk_widget_luna_obj(&luna_widget);
-    lv_obj_t *resp = zmk_widget_responsive_bongo_cat_obj(&responsive_bongo_cat_widget);
-
     if (bongo) {
         v == NICE_OLED_WPM_VIEW_BONGO ? lv_obj_clear_flag(bongo, LV_OBJ_FLAG_HIDDEN)
                                       : lv_obj_add_flag(bongo, LV_OBJ_FLAG_HIDDEN);
@@ -1132,10 +1130,6 @@ static void nice_oled_apply_wpm_view(void) {
     if (luna) {
         v == NICE_OLED_WPM_VIEW_LUNA ? lv_obj_clear_flag(luna, LV_OBJ_FLAG_HIDDEN)
                                      : lv_obj_add_flag(luna, LV_OBJ_FLAG_HIDDEN);
-    }
-    if (resp) {
-        v == NICE_OLED_WPM_VIEW_RESPONSIVE ? lv_obj_clear_flag(resp, LV_OBJ_FLAG_HIDDEN)
-                                           : lv_obj_add_flag(resp, LV_OBJ_FLAG_HIDDEN);
     }
 }
 
@@ -1190,7 +1184,7 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
 
 #endif // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM)
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
+#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
     zmk_widget_responsive_bongo_cat_init(&responsive_bongo_cat_widget, canvas);
     lv_obj_align(zmk_widget_responsive_bongo_cat_obj(&responsive_bongo_cat_widget),
                  LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT_CUSTOM_Y);

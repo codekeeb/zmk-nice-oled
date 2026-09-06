@@ -80,8 +80,17 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_OLED_WIDGET_STATUS)
 
       if(CONFIG_NICE_OLED_WIDGET_WPM)
         zephyr_library_sources(widgets/wpm.c)
-        target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_WPM_LUNA app PRIVATE widgets/luna.c)
-        target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_WPM_BONGO_CAT app PRIVATE widgets/bongo_cat.c)
+        # CODEKEEB: con el ciclo hacen falta LOS TRES widgets, no solo el
+        # que estuviera elegido: screen.c los inicializa todos y oculta
+        # los que no tocan. Sin esto el enlazado falla con undefined
+        # reference a zmk_widget_luna_* / responsive_bongo_cat_*.
+        if(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+          target_sources(app PRIVATE widgets/luna.c)
+          target_sources(app PRIVATE widgets/bongo_cat.c)
+        else()
+          target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_WPM_LUNA app PRIVATE widgets/luna.c)
+          target_sources_ifdef(CONFIG_NICE_OLED_WIDGET_WPM_BONGO_CAT app PRIVATE widgets/bongo_cat.c)
+        endif()
       endif()
 
       if(CONFIG_NICE_OLED_WIDGET_CONNECTION_STATUS)
