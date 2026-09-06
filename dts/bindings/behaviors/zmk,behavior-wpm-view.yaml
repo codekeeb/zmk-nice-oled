@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+
+description: Cycle the central WPM view (bongo cat, luna, number...)
+
+compatible: "zmk,behavior-wpm-view"
+
+include: zero_param.yaml

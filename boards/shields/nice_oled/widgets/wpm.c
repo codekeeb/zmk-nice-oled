@@ -2,6 +2,13 @@
 // #include "../assets/custom_fonts.h"
 #include <math.h>
 #include <zephyr/kernel.h>
+
+/* CODEKEEB: con el ciclo activo las vistas dejan de ser excluyentes en
+   compilacion -- se compilan todas y draw_wpm_status elige cual dibuja
+   segun la vista guardada. */
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+#include <nice_oled/wpm_view.h>
+#endif
 // TODO: fonts global pixel_operator_mono_12
 #include <fonts.h>
 
@@ -156,7 +163,7 @@ static void draw_label(lv_obj_t *canvas, const struct status_state *state) {
 #endif // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_NUMBER)
 
 #else // CONFIG_NICE_EPAPER_ON
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_SPEEDOMETER)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_SPEEDOMETER)
 static void draw_gauge(lv_obj_t *canvas, const struct status_state *state) {
     lv_draw_img_dsc_t img_dsc;
     lv_draw_img_dsc_init(&img_dsc);
@@ -214,10 +221,12 @@ static void draw_needle(lv_obj_t *canvas, const struct status_state *state) {
 }
 #endif // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_SPEEDOMETER)
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA) ||                                                \
-    IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_BONGO_CAT) ||                                           \
-    IS_ENABLED(CONFIG_NICE_OLED_WIDGET_MODIFIERS_INDICATORS_FIXED) ||                              \
-    !IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_GRAPH)
+/* CODEKEEB: con el ciclo activo estas funciones se compilan siempre. */
+#if !IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) &&                                           \
+    (IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA) ||                                               \
+     IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_BONGO_CAT) ||                                          \
+     IS_ENABLED(CONFIG_NICE_OLED_WIDGET_MODIFIERS_INDICATORS_FIXED) ||                             \
+     !IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_GRAPH))
 #else
 static void draw_grid(lv_obj_t *canvas) {
     lv_draw_img_dsc_t img_dsc;
@@ -277,7 +286,7 @@ static void draw_graph(lv_obj_t *canvas, const struct status_state *state) {
 }
 #endif
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_NUMBER)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_NUMBER)
 static void draw_label(lv_obj_t *canvas, const struct status_state *state) {
 
     lv_draw_label_dsc_t label_dsc_wpm;
@@ -320,6 +329,29 @@ void draw_wpm_status(lv_obj_t *canvas, const struct status_state *state) {
 #endif // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_NUMBER)
 
 #else // IS_ENABLED(CONFIG_NICE_EPAPER_ON)
+
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+    /* CODEKEEB: con el ciclo, la vista se elige EN EJECUCION. Luna, el
+       bongo cat y el responsive son widgets aparte que se muestran u
+       ocultan (ver screen.c); aqui solo se dibujan las que pintan sobre
+       el lienzo: numero, velocimetro y grafico. */
+    switch (nice_oled_wpm_view_get()) {
+    case NICE_OLED_WPM_VIEW_SPEEDOMETER:
+        draw_gauge(canvas, state);
+        draw_needle(canvas, state);
+        break;
+    case NICE_OLED_WPM_VIEW_GRAPH:
+        draw_grid(canvas);
+        draw_graph(canvas, state);
+        break;
+    case NICE_OLED_WPM_VIEW_NUMBER:
+        draw_label(canvas, state);
+        break;
+    default:
+        break; /* bongo / luna / responsive: los pinta su widget */
+    }
+    return;
+#endif
 
 #if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_SPEEDOMETER)
     draw_gauge(canvas, state);

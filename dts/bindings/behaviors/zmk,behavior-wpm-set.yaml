@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+
+description: Set the central WPM view by index
+
+compatible: "zmk,behavior-wpm-set"
+
+include: one_param.yaml

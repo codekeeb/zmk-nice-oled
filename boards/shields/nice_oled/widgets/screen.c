@@ -27,6 +27,10 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 #include "output.h"
 #include "profile.h"
 #include "screen.h"
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+#include <nice_oled/events/wpm_view_changed.h>
+#include <nice_oled/wpm_view.h>
+#endif
 
 #ifdef CONFIG_NICE_OLED_WIDGET_RAW_HID
 #include <lvgl.h>
@@ -219,7 +223,7 @@ static struct zmk_widget_sleep_status sleep_status_widget;
  * luna
  **/
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA)
 #include "luna.h"
 static struct zmk_widget_luna luna_widget;
 #endif
@@ -228,7 +232,7 @@ static struct zmk_widget_luna luna_widget;
  * bongo cat
  **/
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_BONGO_CAT)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_BONGO_CAT)
 #include "bongo_cat.h"
 static struct zmk_widget_wpm_bongo_cat wpm_bongo_cat_widget;
 #endif
@@ -237,7 +241,7 @@ static struct zmk_widget_wpm_bongo_cat wpm_bongo_cat_widget;
  * responsive bongo cat
  **/
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
 #include "responsive_bongo_cat.h"
 static struct zmk_widget_responsive_bongo_cat responsive_bongo_cat_widget;
 #endif
@@ -1109,6 +1113,41 @@ ZMK_SUBSCRIPTION(widget_wpm_status, zmk_wpm_state_changed);
  * Initialization
  **/
 
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+/* CODEKEEB: muestra la vista activa y oculta las otras dos. Las que
+   pintan sobre el lienzo (numero, velocimetro, grafico) no tienen objeto
+   propio: las dibuja draw_wpm_status, asi que aqui basta con ocultar los
+   tres widgets cuando toca una de ellas. */
+static void nice_oled_apply_wpm_view(void) {
+    const uint8_t v = nice_oled_wpm_view_get();
+
+    lv_obj_t *bongo = zmk_widget_wpm_bongo_cat_obj(&wpm_bongo_cat_widget);
+    lv_obj_t *luna = zmk_widget_luna_obj(&luna_widget);
+    lv_obj_t *resp = zmk_widget_responsive_bongo_cat_obj(&responsive_bongo_cat_widget);
+
+    if (bongo) {
+        v == NICE_OLED_WPM_VIEW_BONGO ? lv_obj_clear_flag(bongo, LV_OBJ_FLAG_HIDDEN)
+                                      : lv_obj_add_flag(bongo, LV_OBJ_FLAG_HIDDEN);
+    }
+    if (luna) {
+        v == NICE_OLED_WPM_VIEW_LUNA ? lv_obj_clear_flag(luna, LV_OBJ_FLAG_HIDDEN)
+                                     : lv_obj_add_flag(luna, LV_OBJ_FLAG_HIDDEN);
+    }
+    if (resp) {
+        v == NICE_OLED_WPM_VIEW_RESPONSIVE ? lv_obj_clear_flag(resp, LV_OBJ_FLAG_HIDDEN)
+                                           : lv_obj_add_flag(resp, LV_OBJ_FLAG_HIDDEN);
+    }
+}
+
+static int wpm_view_changed_listener(const zmk_event_t *eh) {
+    nice_oled_apply_wpm_view();
+    return ZMK_EV_EVENT_BUBBLE;
+}
+
+ZMK_LISTENER(nice_oled_wpm_view, wpm_view_changed_listener);
+ZMK_SUBSCRIPTION(nice_oled_wpm_view, zmk_wpm_view_changed);
+#endif
+
 int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
     widget->obj = lv_obj_create(parent);
     lv_obj_set_size(widget->obj, CANVAS_HEIGHT, CANVAS_WIDTH);
@@ -1131,7 +1170,15 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
 
 #if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM)
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+    /* CODEKEEB: con el ciclo se crean LOS DOS (y el responsive mas
+       abajo) y se oculta el que no toca; antes eran excluyentes con
+       #elif y solo uno llegaba al binario. */
+    zmk_widget_luna_init(&luna_widget, canvas);
+    lv_obj_align(zmk_widget_luna_obj(&luna_widget), LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_LUNA_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_LUNA_CUSTOM_Y);
+    zmk_widget_wpm_bongo_cat_init(&wpm_bongo_cat_widget, canvas);
+    lv_obj_align(zmk_widget_wpm_bongo_cat_obj(&wpm_bongo_cat_widget), LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_BONGO_CAT_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_BONGO_CAT_CUSTOM_Y);
+#elif IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA)
     zmk_widget_luna_init(&luna_widget, canvas);
     lv_obj_align(zmk_widget_luna_obj(&luna_widget), LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_LUNA_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_LUNA_CUSTOM_Y);
        // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_LUNA)
@@ -1143,7 +1190,7 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
 
 #endif // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM)
 
-#if IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT)
     zmk_widget_responsive_bongo_cat_init(&responsive_bongo_cat_widget, canvas);
     lv_obj_align(zmk_widget_responsive_bongo_cat_obj(&responsive_bongo_cat_widget),
                  LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_RESPONSIVE_BONGO_CAT_CUSTOM_Y);
@@ -1200,6 +1247,11 @@ int zmk_widget_screen_init(struct zmk_widget_screen *widget, lv_obj_t *parent) {
     IS_ENABLED(CONFIG_NICE_OLED_SHOW_SLEEP_ART_ON_SLEEP)
     zmk_widget_sleep_status_init(&sleep_status_widget, canvas);
     lv_obj_align(zmk_widget_sleep_status_obj(&sleep_status_widget), LV_ALIGN_TOP_LEFT, CONFIG_NICE_OLED_WIDGET_SLEEP_STATUS_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_SLEEP_STATUS_CUSTOM_Y);
+#endif
+
+#if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+    /* Deja visible solo la vista guardada. */
+    nice_oled_apply_wpm_view();
 #endif
 
     return 0;

@@ -60,6 +60,12 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_OLED_WIDGET_STATUS)
       zephyr_library_sources(src/behavior_oled_set.c)
     endif()
 
+    # Ciclo de la vista de WPM de la pantalla central.
+    if(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE)
+      zephyr_library_sources(src/wpm_view.c)
+      zephyr_library_sources(src/behavior_wpm_view.c)
+    endif()
+
     zephyr_library_sources(assets/vim.c)
     if(CONFIG_NICE_OLED_SHOW_SLEEP_ART_ON_IDLE OR CONFIG_NICE_OLED_SHOW_SLEEP_ART_ON_IDLE)
       zephyr_library_sources(assets/sleep_status_art.c)

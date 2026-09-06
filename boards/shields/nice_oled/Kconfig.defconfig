@@ -147,6 +147,15 @@ config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SPACEMAN
     bool "Enable spaceman animation on peripheral"
     default n
 
+config NICE_OLED_WPM_VIEW_SELECTABLE
+    bool "Cycle the central WPM view at runtime"
+    default n
+    help
+      Compila TODAS las vistas de WPM (bongo cat, luna, bongo
+      responsive, numero, velocimetro, grafico) y permite cambiar entre
+      ellas en caliente, en vez de fijar una al compilar. La eleccion se
+      guarda en settings, como la animacion del periferico.
+
 config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE
     bool "Compile all animations and switch at runtime (&oledanim behavior)"
     default n
