@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT
+#
+# Relay interno central->periferico: fija la animacion del OLED por
+# indice. La pantalla animada la lleva el periferico y el estado es
+# local a cada mitad, asi que cambiarla desde ZMK Studio (que corre en
+# el central) necesita reenviar la orden, igual que &oledanim consigue
+# con locality global. Nombre <= 8 caracteres: limite del payload BLE.
+
+description: Set the peripheral OLED animation by index (internal relay)
+
+compatible: "zmk,behavior-oled-set"
+
+include: one_param.yaml

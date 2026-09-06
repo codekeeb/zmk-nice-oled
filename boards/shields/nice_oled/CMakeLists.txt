@@ -55,6 +55,9 @@ if(CONFIG_ZMK_DISPLAY AND CONFIG_NICE_OLED_WIDGET_STATUS)
       # (el behavior es de locality global).
       zephyr_library_sources(src/oled_anim.c)
       zephyr_library_sources(src/behavior_oled_anim.c)
+      # Relay para fijar la animacion por indice desde el central
+      # (ZMK Studio). Ver src/behavior_oled_set.c.
+      zephyr_library_sources(src/behavior_oled_set.c)
     endif()
 
     zephyr_library_sources(assets/vim.c)
