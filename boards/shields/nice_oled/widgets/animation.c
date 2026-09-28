@@ -149,8 +149,65 @@ static const lv_img_dsc_t *sel_pokemon_imgs[] = {
     &pokemon_35, &pokemon_36, &pokemon_37, &pokemon_38, &pokemon_39, &pokemon_40, &pokemon_41,
     &pokemon_42, &pokemon_43, &pokemon_44, &pokemon_45, &pokemon_46, &pokemon_47};
 
-LV_IMG_DECLARE(codekeeb_logo);
-static const lv_img_dsc_t *sel_logo_imgs[] = {&codekeeb_logo};
+/* Logo CODE/KEEB animado: la pildora es un cristal que gira y un destello
+   cruza las letras. Lo genera tools/codekeeb_logo/gen.py. */
+LV_IMG_DECLARE(codekeeb_logo_00);
+LV_IMG_DECLARE(codekeeb_logo_01);
+LV_IMG_DECLARE(codekeeb_logo_02);
+LV_IMG_DECLARE(codekeeb_logo_03);
+LV_IMG_DECLARE(codekeeb_logo_04);
+LV_IMG_DECLARE(codekeeb_logo_05);
+LV_IMG_DECLARE(codekeeb_logo_06);
+LV_IMG_DECLARE(codekeeb_logo_07);
+LV_IMG_DECLARE(codekeeb_logo_08);
+LV_IMG_DECLARE(codekeeb_logo_09);
+LV_IMG_DECLARE(codekeeb_logo_10);
+LV_IMG_DECLARE(codekeeb_logo_11);
+LV_IMG_DECLARE(codekeeb_logo_12);
+LV_IMG_DECLARE(codekeeb_logo_13);
+LV_IMG_DECLARE(codekeeb_logo_14);
+LV_IMG_DECLARE(codekeeb_logo_15);
+LV_IMG_DECLARE(codekeeb_logo_16);
+LV_IMG_DECLARE(codekeeb_logo_17);
+LV_IMG_DECLARE(codekeeb_logo_18);
+LV_IMG_DECLARE(codekeeb_logo_19);
+LV_IMG_DECLARE(codekeeb_logo_20);
+LV_IMG_DECLARE(codekeeb_logo_21);
+LV_IMG_DECLARE(codekeeb_logo_22);
+LV_IMG_DECLARE(codekeeb_logo_23);
+LV_IMG_DECLARE(codekeeb_logo_24);
+LV_IMG_DECLARE(codekeeb_logo_25);
+LV_IMG_DECLARE(codekeeb_logo_26);
+LV_IMG_DECLARE(codekeeb_logo_27);
+LV_IMG_DECLARE(codekeeb_logo_28);
+LV_IMG_DECLARE(codekeeb_logo_29);
+LV_IMG_DECLARE(codekeeb_logo_30);
+LV_IMG_DECLARE(codekeeb_logo_31);
+LV_IMG_DECLARE(codekeeb_logo_32);
+LV_IMG_DECLARE(codekeeb_logo_33);
+LV_IMG_DECLARE(codekeeb_logo_34);
+LV_IMG_DECLARE(codekeeb_logo_35);
+LV_IMG_DECLARE(codekeeb_logo_36);
+LV_IMG_DECLARE(codekeeb_logo_37);
+LV_IMG_DECLARE(codekeeb_logo_38);
+LV_IMG_DECLARE(codekeeb_logo_39);
+LV_IMG_DECLARE(codekeeb_logo_40);
+LV_IMG_DECLARE(codekeeb_logo_41);
+LV_IMG_DECLARE(codekeeb_logo_42);
+LV_IMG_DECLARE(codekeeb_logo_43);
+LV_IMG_DECLARE(codekeeb_logo_44);
+LV_IMG_DECLARE(codekeeb_logo_45);
+LV_IMG_DECLARE(codekeeb_logo_46);
+LV_IMG_DECLARE(codekeeb_logo_47);
+static const lv_img_dsc_t *sel_logo_imgs[] = {
+    &codekeeb_logo_00, &codekeeb_logo_01, &codekeeb_logo_02, &codekeeb_logo_03, &codekeeb_logo_04, &codekeeb_logo_05,
+    &codekeeb_logo_06, &codekeeb_logo_07, &codekeeb_logo_08, &codekeeb_logo_09, &codekeeb_logo_10, &codekeeb_logo_11,
+    &codekeeb_logo_12, &codekeeb_logo_13, &codekeeb_logo_14, &codekeeb_logo_15, &codekeeb_logo_16, &codekeeb_logo_17,
+    &codekeeb_logo_18, &codekeeb_logo_19, &codekeeb_logo_20, &codekeeb_logo_21, &codekeeb_logo_22, &codekeeb_logo_23,
+    &codekeeb_logo_24, &codekeeb_logo_25, &codekeeb_logo_26, &codekeeb_logo_27, &codekeeb_logo_28, &codekeeb_logo_29,
+    &codekeeb_logo_30, &codekeeb_logo_31, &codekeeb_logo_32, &codekeeb_logo_33, &codekeeb_logo_34, &codekeeb_logo_35,
+    &codekeeb_logo_36, &codekeeb_logo_37, &codekeeb_logo_38, &codekeeb_logo_39, &codekeeb_logo_40, &codekeeb_logo_41,
+    &codekeeb_logo_42, &codekeeb_logo_43, &codekeeb_logo_44, &codekeeb_logo_45, &codekeeb_logo_46, &codekeeb_logo_47};
 
 struct sel_anim {
     const lv_img_dsc_t **imgs;
@@ -164,7 +221,7 @@ static const struct sel_anim sel_anims[] = {
     {sel_head_imgs, 16, 1600},      /* 2: cabeza (10 fps) */
     {sel_spaceman_imgs, 20, 2000},  /* 3: astronauta (10 fps) */
     {sel_pokemon_imgs, 48, 4800},   /* 4: pokemon (10 fps) */
-    {sel_logo_imgs, 1, 960},        /* 5: logo CODE/KEEB (estatico) */
+    {sel_logo_imgs, 48, 3600},      /* 5: logo CODE/KEEB (48 x 75 ms) */
 };
 
 static lv_obj_t *sel_art = NULL;
