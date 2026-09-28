@@ -536,6 +536,11 @@ endif # !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL
 # Users can override the defaults by setting the value in their .conf file.
 
 ## LAYER WIDGET POSITION {{{
+config NICE_OLED_WIDGET_LAYER_WIDTH
+    int "Visible width the layer name has to fit in"
+    default 32 if NICE_OLED_ON
+    default 68
+
 config NICE_OLED_WIDGET_LAYER_CUSTOM_X
     int "Layer widget X position"
     default 0 if NICE_OLED_ON
