@@ -197,7 +197,9 @@ static void draw_needle(lv_obj_t *canvas, const struct status_state *state) {
     if (value > max)
         value = max;
 
-    float radius = 25.45585;
+    /* CODEKEEB: en el panel de 32 px del Sofle un radio de 25 se sale del
+       arco y del panel; el radio sale de Kconfig. */
+    float radius = CONFIG_NICE_OLED_WIDGET_WPM_NEEDLE_RADIUS;
     float angleDeg = 225 + ((float)value / max) * 90;
     float angleRad = angleDeg * (3.14159 / 180.0f);
 
@@ -228,11 +230,17 @@ static void draw_needle(lv_obj_t *canvas, const struct status_state *state) {
      IS_ENABLED(CONFIG_NICE_OLED_WIDGET_MODIFIERS_INDICATORS_FIXED) ||                             \
      !IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_GRAPH))
 #else
+/* La linea va de borde a borde de la rejilla y su base es la ultima
+   fila de la rejilla (33 px de alto). */
+#define GRAPH_X0 (CONFIG_NICE_OLED_WIDGET_WPM_GRAPH_CUSTOM_X + 1)
+#define GRAPH_BOTTOM (CONFIG_NICE_OLED_WIDGET_WPM_GRAPH_CUSTOM_Y + 32)
+
 static void draw_grid(lv_obj_t *canvas) {
     lv_draw_img_dsc_t img_dsc;
     lv_draw_img_dsc_init(&img_dsc);
 
-    lv_canvas_draw_img(canvas, -1, 95, &grid, &img_dsc);
+    lv_canvas_draw_img(canvas, CONFIG_NICE_OLED_WIDGET_WPM_GRAPH_CUSTOM_X,
+                       CONFIG_NICE_OLED_WIDGET_WPM_GRAPH_CUSTOM_Y, &grid, &img_dsc);
 }
 
 static void draw_graph(lv_obj_t *canvas, const struct status_state *state) {
@@ -254,9 +262,11 @@ static void draw_graph(lv_obj_t *canvas, const struct status_state *state) {
         }
 
         // modificar aqui par la posicion de la grafica
-        points[i].x = -36 + i * 7.4;
-        points[i].y = 127 - (value * 32 / max);
-        // points[i].y = 132 - (value * 32 / max);
+        /* CODEKEEB: dentro de la rejilla y del ancho visible. Antes
+           empezaba en x=-36 y bajaba hasta y=127, encima de los
+           modificadores (y=100). */
+        points[i].x = GRAPH_X0 + i * (CONFIG_NICE_OLED_WIDGET_WPM_GRAPH_WIDTH - 2) / 9;
+        points[i].y = GRAPH_BOTTOM - (value * 32 / max);
     }
 #else
     int max = 0;
@@ -277,8 +287,8 @@ static void draw_graph(lv_obj_t *canvas, const struct status_state *state) {
     }
 
     for (int i = 0; i < 10; i++) {
-        points[i].x = 0 + i * 7.4;
-        points[i].y = 97 - (state->wpm[i] - min) * 32 / range;
+        points[i].x = GRAPH_X0 + i * (CONFIG_NICE_OLED_WIDGET_WPM_GRAPH_WIDTH - 2) / 9;
+        points[i].y = GRAPH_BOTTOM - (state->wpm[i] - min) * 32 / range;
     }
 #endif
 
@@ -288,21 +298,24 @@ static void draw_graph(lv_obj_t *canvas, const struct status_state *state) {
 
 #if IS_ENABLED(CONFIG_NICE_OLED_WPM_VIEW_SELECTABLE) || IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_NUMBER)
 static void draw_label(lv_obj_t *canvas, const struct status_state *state) {
-
+    /* CODEKEEB: numero centrado en el ancho visible (con los desfases
+       fijos de +5/+2 quedaba pegado a la izquierda) y rotulo "WPM"
+       debajo, porque un numero suelto no dice que es. */
     lv_draw_label_dsc_t label_dsc_wpm;
-    init_label_dsc(&label_dsc_wpm, LVGL_FOREGROUND, &pixel_operator_mono_12, LV_TEXT_ALIGN_LEFT);
+    init_label_dsc(&label_dsc_wpm, LVGL_FOREGROUND, &pixel_operator_mono_16, LV_TEXT_ALIGN_CENTER);
 
     char wpm_text[10] = {};
-
     snprintf(wpm_text, sizeof(wpm_text), "%d", state->wpm[9]);
-    // if wpm < 10, else if wpm => 10 and wpm < 100, else wpm >= 100
-    if (state->wpm[9] < 10) {
-        lv_canvas_draw_text(canvas, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X + 5, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_Y, 50, &label_dsc_wpm, wpm_text);
-    } else if (state->wpm[9] >= 10 && state->wpm[9] < 100) {
-        lv_canvas_draw_text(canvas, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X + 2, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_Y, 50, &label_dsc_wpm, wpm_text);
-    } else {
-        lv_canvas_draw_text(canvas, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_Y, 50, &label_dsc_wpm, wpm_text);
-    }
+    lv_canvas_draw_text(canvas, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X,
+                        CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_Y,
+                        CONFIG_NICE_OLED_WIDGET_WPM_LABEL_WIDTH, &label_dsc_wpm, wpm_text);
+
+    lv_draw_label_dsc_t label_dsc_caption;
+    init_label_dsc(&label_dsc_caption, LVGL_FOREGROUND, &pixel_operator_mono_8,
+                   LV_TEXT_ALIGN_CENTER);
+    lv_canvas_draw_text(canvas, CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X,
+                        CONFIG_NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_Y + 16,
+                        CONFIG_NICE_OLED_WIDGET_WPM_LABEL_WIDTH, &label_dsc_caption, "WPM");
 }
 #endif // IS_ENABLED(CONFIG_NICE_OLED_WIDGET_WPM_NUMBER)
 #endif // CONFIG_NICE_EPAPER_ON

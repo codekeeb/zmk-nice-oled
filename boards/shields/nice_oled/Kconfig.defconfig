@@ -634,7 +634,7 @@ config NICE_OLED_WIDGET_OUTPUT_BT_UNBONDED_CUSTOM_Y
 ## WPM WIDGET POSITION {{{
 config NICE_OLED_WIDGET_WPM_GAUGE_CUSTOM_X
     int "WPM gauge X position"
-    default 0 if NICE_OLED_ON
+    default -1 if NICE_OLED_ON
     default 16 if NICE_EPAPER_ON
     default 0
 
@@ -646,15 +646,43 @@ config NICE_OLED_WIDGET_WPM_GAUGE_CUSTOM_Y
 
 config NICE_OLED_WIDGET_WPM_NEEDLE_CENTER_CUSTOM_X
     int "WPM needle center X position"
-    default 12 if NICE_OLED_ON
+    default 15 if NICE_OLED_ON
     default 33 if NICE_EPAPER_ON
     default 12
 
 config NICE_OLED_WIDGET_WPM_NEEDLE_CENTER_CUSTOM_Y
     int "WPM needle center Y position"
-    default 90 if NICE_OLED_ON
+    default 92 if NICE_OLED_ON
     default 66 if NICE_EPAPER_ON
     default 90
+
+# CODEKEEB: el panel del Sofle es un SSD1306 de 128x32. Tras rotate_canvas
+# solo se ve la franja x 0..31 del lienzo, asi que las vistas de WPM tienen
+# que caber en 32 px y entre la bateria (acaba en y=63) y los
+# modificadores (empiezan en y=100).
+config NICE_OLED_WIDGET_WPM_NEEDLE_RADIUS
+    int "WPM needle length (px from the center)"
+    default 18 if NICE_OLED_ON
+    default 25
+
+config NICE_OLED_WIDGET_WPM_GRAPH_CUSTOM_X
+    int "WPM graph grid X position"
+    default -1
+
+config NICE_OLED_WIDGET_WPM_GRAPH_CUSTOM_Y
+    int "WPM graph grid Y position (top of the 33 px grid)"
+    default 65 if NICE_OLED_ON
+    default 95
+
+config NICE_OLED_WIDGET_WPM_GRAPH_WIDTH
+    int "Visible width for the WPM graph line"
+    default 32 if NICE_OLED_ON
+    default 68
+
+config NICE_OLED_WIDGET_WPM_LABEL_WIDTH
+    int "Width the WPM number is centered in"
+    default 32 if NICE_OLED_ON
+    default 68
 
 config NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X
     int "WPM label X position"
@@ -664,7 +692,7 @@ config NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_X
 
 config NICE_OLED_WIDGET_WPM_LABEL_CUSTOM_Y
     int "WPM label Y position"
-    default 75 if NICE_OLED_ON
+    default 70 if NICE_OLED_ON
     default 103 if NICE_EPAPER_ON
     default 75
 ##}}}
