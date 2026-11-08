@@ -160,6 +160,13 @@ config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE
     bool "Compile all animations and switch at runtime (&oledanim behavior)"
     default n
 
+config NICE_OLED_TOAST
+    bool "Short notices over the peripheral animation (nice_oled_toast_show)"
+    default y if NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_SELECTABLE && ZMK_SPLIT && !ZMK_SPLIT_ROLE_CENTRAL
+    help
+      Lets other code (the RGB effects) name what just changed on the
+      peripheral screen for a moment. Peripheral only.
+
 config NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_MS
     int "Animation length in milliseconds"
     default 10000 if NICE_OLED_WIDGET_ANIMATION_PERIPHERAL_POKEMON

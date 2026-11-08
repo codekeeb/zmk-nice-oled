@@ -34,6 +34,9 @@ const lv_img_dsc_t *crystal_imgs[] = {
 #include <zmk/event_manager.h>
 #include <nice_oled/events/oled_anim_changed.h>
 #include <nice_oled/oled_anim.h>
+#if IS_ENABLED(CONFIG_NICE_OLED_TOAST)
+#include <nice_oled/toast.h>
+#endif
 
 LV_IMG_DECLARE(cat_0);
 LV_IMG_DECLARE(cat_1);
@@ -423,6 +426,9 @@ void draw_animation(lv_obj_t *canvas, struct zmk_widget_screen *widget) {
     sel_canvas = canvas;
     sel_apply(nice_oled_anim_get());
     widget_oled_anim_init();
+#if IS_ENABLED(CONFIG_NICE_OLED_TOAST)
+    nice_oled_toast_init(canvas);
+#endif
     return;
 #endif
 
