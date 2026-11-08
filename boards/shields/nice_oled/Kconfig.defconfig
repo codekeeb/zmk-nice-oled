@@ -61,8 +61,6 @@ config LV_Z_MEM_POOL_SIZE
 
 config ZMK_DISPLAY_DEDICATED_THREAD_STACK_SIZE
     int "zmk display dedicated thread stack size"
-    # CODEKEEB: room for the toast's off-screen text drawing.
-    default 4096 if NICE_OLED_TOAST
     default 3072 if NICE_OLED_WIDGET_RAW_HID && (!ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL)
     default 2560
 

@@ -32,11 +32,14 @@
 LV_FONT_DECLARE(pixel_operator_mono_8);
 LV_FONT_DECLARE(pixel_operator_mono_12);
 
-/* The defaults in Kconfig.defconfig must have won: with the stock 4 KB
- * LVGL pool and 2.5 KB display stack the peripheral ran out and stopped. */
+/* With the stock 4 KB LVGL pool and ZMK's 2 KB display stack the
+ * peripheral overflowed and stopped. The pool default lives in
+ * Kconfig.defconfig; the stack must be set in the keyboard's .conf
+ * (CONFIG_ZMK_DISPLAY_DEDICATED_THREAD_STACK_SIZE=4096), because ZMK's own
+ * default wins over a module's. */
 BUILD_ASSERT(CONFIG_LV_Z_MEM_POOL_SIZE >= 8192, "toast needs the larger LVGL pool");
 BUILD_ASSERT(CONFIG_ZMK_DISPLAY_DEDICATED_THREAD_STACK_SIZE >= 4096,
-             "toast needs the larger display stack");
+             "set CONFIG_ZMK_DISPLAY_DEDICATED_THREAD_STACK_SIZE=4096 in the .conf");
 
 #define PANEL_W 128 /* landscape, as the panel is wired */
 #define PANEL_H 32
