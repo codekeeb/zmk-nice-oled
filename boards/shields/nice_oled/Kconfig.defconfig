@@ -53,11 +53,16 @@ config ZMK_DISPLAY_BLANK_ON_IDLE
     default y if NICE_CUSTOM_ON
 
 config LV_Z_MEM_POOL_SIZE
+    # CODEKEEB: the toast adds two canvases and draws text off-screen on
+    # the peripheral; 4096 left no headroom for that.
+    default 8192 if NICE_OLED_TOAST
     default 8192 if !ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL # dongle_display: 8192 prospector: 10000 def: 4096
     default 4096 # dongle_display: 8192 prospector: 10000 def: 4096
 
 config ZMK_DISPLAY_DEDICATED_THREAD_STACK_SIZE
     int "zmk display dedicated thread stack size"
+    # CODEKEEB: room for the toast's off-screen text drawing.
+    default 4096 if NICE_OLED_TOAST
     default 3072 if NICE_OLED_WIDGET_RAW_HID && (!ZMK_SPLIT || ZMK_SPLIT_ROLE_CENTRAL)
     default 2560
 
